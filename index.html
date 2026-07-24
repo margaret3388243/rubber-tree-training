@@ -1,0 +1,359 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>橡胶树割胶线怎么开｜交互式现场训练</title>
+  <style>
+    :root {
+      --forest: #123b31;
+      --forest-2: #1d5747;
+      --ink: #1a2b27;
+      --muted: #6c7a74;
+      --paper: #f4f0e6;
+      --panel: #fffdf8;
+      --line: #d9ded5;
+      --lime: #b8d49a;
+      --orange: #e98a3a;
+      --red: #c94b45;
+      --green: #2f7d5b;
+      --shadow: 0 22px 60px rgba(16, 44, 35, .18);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; min-height: 100%; background: #10221c; color: var(--ink); font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif; }
+    body { display: grid; place-items: center; min-height: 100vh; overflow: auto; padding: clamp(0px, 2vw, 24px); }
+    button { font: inherit; }
+    .app { width: min(100%, 1600px); height: min(calc(100vh - clamp(0px, 4vw, 48px)), 900px); min-height: 620px; position: relative; overflow: hidden; background: var(--paper); box-shadow: var(--shadow); }
+    .topline { position: absolute; z-index: 10; left: 34px; right: 34px; top: 26px; display: flex; justify-content: space-between; align-items: center; color: rgba(255,255,255,.82); font-size: 12px; letter-spacing: .16em; pointer-events: none; }
+    .topline.light { color: var(--forest); }
+    .brand { display: flex; gap: 10px; align-items: center; font-weight: 700; }
+    .brand-mark { width: 12px; height: 12px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 5px rgba(233,138,58,.22); }
+    .counter { font-variant-numeric: tabular-nums; }
+    .progress { position: absolute; z-index: 11; left: 0; bottom: 0; height: 5px; background: var(--orange); transition: width .3s ease; }
+    .slide { position: absolute; inset: 0; padding: 78px 68px 96px; opacity: 0; visibility: hidden; transform: translateX(18px); transition: opacity .3s ease, transform .3s ease, visibility .3s; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--orange) rgba(18,59,49,.12); }
+    .slide.active { opacity: 1; visibility: visible; transform: none; }
+    .slide.light { background: var(--paper); }
+    .slide.dark { background: var(--forest); color: #fff; }
+    .kicker { margin: 0 0 15px; color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+    .dark .kicker { color: var(--lime); }
+    h1, h2, h3, p { margin: 0; }
+    .title { max-width: 880px; font-size: clamp(30px, 4.4vw, 70px); line-height: 1.08; letter-spacing: -.035em; }
+    .subtitle { max-width: 750px; margin-top: 16px; color: var(--muted); font-size: clamp(16px, 1.7vw, 25px); line-height: 1.55; }
+    .dark .subtitle { color: rgba(255,255,255,.72); }
+    .index { color: rgba(18,59,49,.14); font-size: 76px; font-weight: 900; line-height: .8; letter-spacing: -.08em; }
+    .dark .index { color: rgba(255,255,255,.12); }
+    .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 28px; margin-bottom: 27px; }
+    .rule { height: 1px; margin: 22px 0 26px; background: var(--line); }
+    .dark .rule { background: rgba(255,255,255,.2); }
+    .btn { border: 1px solid var(--forest); background: var(--forest); color: #fff; padding: 12px 17px; cursor: pointer; border-radius: 3px; transition: transform .18s ease, background .18s ease, border-color .18s ease; }
+    .btn:hover { transform: translateY(-2px); background: var(--forest-2); }
+    .btn.alt { background: transparent; color: var(--forest); }
+    .dark .btn.alt { border-color: rgba(255,255,255,.35); color: #fff; }
+    .micro { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .cover { padding: 0; background: var(--forest); }
+    .cover::before { content: ""; position: absolute; inset: 0; background: rgba(18,59,49,.68); z-index: 1; }
+    .cover-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.82) contrast(1.05); }
+    .cover-copy { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center; width: 62%; height: 100%; padding: 90px 0 76px 76px; color: #fff; }
+    .cover-copy .title { max-width: 720px; font-size: clamp(43px, 6.3vw, 98px); }
+    .cover-copy .subtitle { max-width: 580px; color: rgba(255,255,255,.78); }
+    .cover-tag { display: inline-flex; width: max-content; padding: 8px 12px; border: 1px solid rgba(255,255,255,.3); color: var(--lime); font-size: 12px; letter-spacing: .15em; }
+    .cover-meta { display: flex; gap: 32px; margin: 37px 0 32px; }
+    .cover-meta span { display: block; color: rgba(255,255,255,.54); font-size: 12px; }
+    .cover-meta strong { display: block; margin-top: 5px; color: #fff; font-size: 18px; }
+    .cover-start { display: inline-flex; align-items: center; gap: 12px; width: max-content; border: 0; padding: 0; background: transparent; color: #fff; font-weight: 800; letter-spacing: .12em; cursor: pointer; }
+    .cover-start i { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 50%; background: var(--orange); color: #fff; font-style: normal; font-size: 20px; }
+    .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .principle { position: relative; min-height: 315px; overflow: hidden; padding: 24px; background: var(--panel); border: 1px solid var(--line); }
+    .principle::after { content: ""; position: absolute; right: -30px; bottom: -30px; width: 150px; height: 150px; border: 1px solid var(--lime); border-radius: 50%; opacity: .55; }
+    .principle .num { color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .12em; }
+    .principle h3 { margin-top: 28px; font-size: 27px; }
+    .principle p { max-width: 280px; margin-top: 15px; color: var(--muted); font-size: 15px; line-height: 1.75; }
+    .principle img { position: absolute; right: 18px; bottom: 16px; width: 104px; height: 104px; border-radius: 50%; object-fit: cover; opacity: .48; filter: saturate(.6); }
+    .quiz { display: grid; grid-template-columns: 1.02fr .98fr; gap: 42px; height: 100%; }
+    .quiz-main { min-width: 0; }
+    .question { max-width: 760px; font-size: clamp(26px, 3.2vw, 52px); line-height: 1.14; letter-spacing: -.035em; }
+    .question-note { margin-top: 13px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+    .hero-image { width: 100%; height: 240px; margin-top: 25px; overflow: hidden; background: #dfe3db; }
+    .hero-image img, .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .choices { display: grid; align-content: start; gap: 11px; padding-top: 12px; }
+    .choices-label { color: var(--forest); font-size: 12px; font-weight: 800; letter-spacing: .16em; }
+    .choice { display: flex; align-items: center; gap: 13px; min-height: 58px; padding: 12px 15px; background: var(--panel); border: 1px solid var(--line); color: var(--ink); text-align: left; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease; }
+    .choice:hover { transform: translateX(3px); border-color: var(--orange); }
+    .choice .letter { display: grid; flex: 0 0 auto; place-items: center; width: 29px; height: 29px; border-radius: 50%; background: #e9efe4; color: var(--forest); font-weight: 800; }
+    .choice.correct { border-color: var(--green); background: #edf7ef; }
+    .choice.correct .letter { background: var(--green); color: #fff; }
+    .choice.wrong { border-color: var(--red); background: #fff0ed; }
+    .choice.wrong .letter { background: var(--red); color: #fff; }
+    .feedback { min-height: 55px; margin-top: 18px; padding: 13px 15px; background: #e9ece5; color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .feedback.ok { background: #e4f1e7; color: #22603f; }
+    .feedback.bad { background: #f9e6e2; color: #873e32; }
+    .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    .photo { padding: 9px; background: var(--panel); border: 1px solid var(--line); }
+    .photo img { height: 210px; }
+    .photo figcaption { padding: 11px 3px 2px; color: var(--muted); font-size: 14px; }
+    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 26px; }
+    .gallery-card { padding: 9px; background: var(--panel); border: 1px solid var(--line); cursor: pointer; transition: transform .18s ease, border-color .18s ease; }
+    .gallery-card:hover { transform: translateY(-4px); border-color: var(--orange); }
+    .gallery-card img { width: 100%; height: 185px; display: block; object-fit: cover; }
+    .gallery-card strong { display: block; padding: 11px 3px 3px; font-size: 15px; }
+    .gallery-card.correct { border: 3px solid var(--green); padding: 7px; }
+    .gallery-card.wrong { border: 3px solid var(--red); padding: 7px; }
+    .template-stage { display: grid; grid-template-columns: 1.05fr .95fr; gap: 22px; height: 100%; }
+    .tree-zone { position: relative; min-height: 390px; overflow: hidden; background: #dbe0d7; border: 1px solid var(--line); }
+    .tree-zone > img { width: 100%; height: 100%; object-fit: cover; }
+    .target-zone { position: absolute; left: 42%; top: 28%; width: 35%; height: 44%; border: 2px dashed var(--orange); background: rgba(233,138,58,.12); color: #fff; text-align: center; }
+    .target-zone span { display: inline-block; margin-top: 16px; padding: 5px 8px; background: rgba(18,59,49,.8); font-size: 12px; }
+    .template-card { padding: 15px; background: var(--panel); border: 1px solid var(--line); cursor: grab; }
+    .template-card:active { cursor: grabbing; }
+    .template-card img { width: 100%; height: 230px; object-fit: contain; background: #e6eadf; }
+    .template-card strong { display: block; margin-top: 12px; }
+    .template-card.placed { border-color: var(--green); background: #edf7ef; }
+    .diagram-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 28px; }
+    .diagram { position: relative; min-height: 250px; padding: 14px; background: var(--panel); border: 1px solid var(--line); cursor: pointer; }
+    .diagram .slice { display: grid; grid-template-columns: 18px 1fr; height: 150px; margin: 14px auto 11px; max-width: 200px; }
+    .slice .bark { background: #72503c; }
+    .slice .cambium { background: var(--lime); }
+    .slice .wood { position: relative; background: #ece2c4; }
+    .slice .knife { position: absolute; left: 17%; width: 65%; height: 6px; background: var(--orange); transform: rotate(-13deg); box-shadow: 0 0 0 3px rgba(233,138,58,.17); }
+    .slice.shallow .knife { top: 28%; }
+    .slice.good .knife { top: 58%; }
+    .slice.deep .knife { top: 80%; background: var(--red); }
+    .diagram strong { font-size: 15px; }
+    .diagram.correct { border: 3px solid var(--green); padding: 12px; }
+    .diagram.wrong { border: 3px solid var(--red); padding: 12px; }
+    .process { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 35px; }
+    .process-card { min-height: 180px; padding: 17px; background: var(--panel); border: 1px solid var(--line); cursor: pointer; user-select: none; }
+    .process-card.selected { border-color: var(--orange); box-shadow: inset 0 4px 0 var(--orange); }
+    .process-card.done { border-color: var(--green); background: #edf7ef; }
+    .process-card .step-no { color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .12em; }
+    .process-card h3 { margin-top: 28px; font-size: 18px; line-height: 1.35; }
+    .process-card p { margin-top: 9px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .selected-order { display: flex; gap: 8px; flex-wrap: wrap; min-height: 26px; margin-top: 17px; color: var(--forest); font-size: 13px; }
+    .order-chip { padding: 5px 8px; background: var(--lime); }
+    .matching { display: grid; gap: 11px; margin-top: 25px; }
+    .match-row { display: grid; grid-template-columns: 1.05fr .95fr; gap: 11px; align-items: stretch; }
+    .match-problem, .match-actions button { padding: 15px; border: 1px solid var(--line); background: var(--panel); text-align: left; line-height: 1.45; }
+    .match-problem { color: var(--forest); font-weight: 700; }
+    .match-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .match-actions button { cursor: pointer; color: var(--ink); }
+    .match-actions button:hover { border-color: var(--orange); }
+    .match-actions button.selected { border-color: var(--green); background: #e4f1e7; color: #22603f; }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 38px; }
+    .summary-card { min-height: 210px; padding: 24px; background: var(--forest); color: #fff; }
+    .summary-card .tag { color: var(--lime); font-size: 12px; font-weight: 800; letter-spacing: .15em; }
+    .summary-card h3 { margin-top: 29px; font-size: 30px; }
+    .summary-card p { margin-top: 13px; color: rgba(255,255,255,.72); font-size: 15px; line-height: 1.65; }
+    .result { display: grid; grid-template-columns: 1fr .9fr; align-items: center; gap: 50px; height: 100%; }
+    .score-wrap { display: grid; place-items: center; }
+    .score-ring { display: grid; place-items: center; width: min(29vw, 330px); aspect-ratio: 1; border: 20px solid #dbe5d6; border-top-color: var(--orange); border-right-color: var(--forest); border-radius: 50%; transform: rotate(-24deg); }
+    .score { transform: rotate(24deg); color: var(--forest); font-size: clamp(60px, 9vw, 132px); font-weight: 900; letter-spacing: -.08em; }
+    .result-copy h2 { margin-top: 12px; font-size: clamp(29px, 4vw, 58px); line-height: 1.12; }
+    .result-copy p { max-width: 590px; margin-top: 16px; color: var(--muted); font-size: 16px; line-height: 1.8; }
+    .result-actions { display: flex; gap: 10px; margin-top: 26px; }
+    .nav { position: absolute; z-index: 20; left: 30px; right: 30px; bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-group { display: flex; gap: 8px; }
+    .nav button { width: 38px; height: 38px; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; background: rgba(18,59,49,.82); color: #fff; cursor: pointer; }
+    .slide.light ~ .nav button { color: var(--forest); }
+    .toc-button { width: auto !important; padding: 0 14px; border-radius: 20px !important; font-size: 12px; letter-spacing: .08em; }
+    .toc { position: absolute; z-index: 40; inset: 0; display: none; padding: 65px; background: rgba(16,34,28,.96); color: #fff; }
+    .toc.open { display: block; }
+    .toc h2 { font-size: 34px; }
+    .toc-close { position: absolute; right: 29px; top: 22px; border: 0; background: transparent; color: #fff; font-size: 28px; cursor: pointer; }
+    .toc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 27px; }
+    .toc-item { padding: 13px 15px; border: 1px solid rgba(255,255,255,.2); color: rgba(255,255,255,.76); text-align: left; cursor: pointer; }
+    .toc-item:hover { border-color: var(--orange); background: var(--orange); color: #fff; }
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .app { width: 100vw; height: 100vh; min-height: 620px; }
+      .slide { padding: 64px 24px 69px; overflow-y: auto; }
+      .topline { left: 18px; right: 18px; top: 17px; }
+      .cover-copy { width: 100%; padding: 84px 27px 70px; }
+      .cover-copy .title { font-size: clamp(40px, 12vw, 67px); }
+      .cover-image { opacity: .72; }
+      .cover::before { background: rgba(18,59,49,.74); }
+      .cover-meta { gap: 18px; margin: 27px 0; }
+      .three, .summary-grid, .gallery, .diagram-grid { grid-template-columns: 1fr; }
+      .principle, .summary-card { min-height: 155px; }
+      .principle:nth-child(n+2), .summary-card:nth-child(n+2) { display: none; }
+      .principle img { width: 80px; height: 80px; }
+      .quiz, .template-stage, .result { grid-template-columns: 1fr; height: auto; gap: 18px; }
+      .hero-image { height: 180px; }
+      .photo-grid { grid-template-columns: 1fr 1fr; }
+      .photo img { height: 130px; }
+      .process { grid-template-columns: 1fr 1fr; }
+      .process-card { min-height: 135px; }
+      .process-card h3 { margin-top: 15px; font-size: 16px; }
+      .match-row { grid-template-columns: 1fr; gap: 5px; }
+      .match-actions { grid-template-columns: 1fr 1fr; }
+      .tree-zone { min-height: 280px; }
+      .template-card img { height: 130px; }
+      .score-ring { width: 180px; border-width: 13px; }
+      .result { padding-top: 35px; }
+      .result-copy { text-align: center; }
+      .result-actions { justify-content: center; }
+      .toc { padding: 50px 24px; overflow-y: auto; }
+      .toc-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main id="app" class="app" aria-label="橡胶树割胶线交互式教学"></main>
+  <script>
+    const asset = name => encodeURI('tp/' + name);
+    const slides = [
+      { type: 'cover', image: '清晨橡胶林封面.jpg' },
+      { type: 'principles' },
+      { type: 'beforeafter', image1: '树干清理前.jpg', image2: '树干清理后.jpg' },
+      { type: 'angle' },
+      { type: 'template', tree: '橡胶树倾斜树干.jpg', template: '橡胶树倾斜树干透明模板.jpg' },
+      { type: 'depth' },
+      { type: 'quiz', image: '跳刀割面与偏弱胶流图片.jpg', title: '胶流偏弱，要立即加深吗？', note: '试割后胶流偏弱，割面还有跳刀痕迹，你先做什么？', options: ['整条深压一刀', '停刀检查刀具、刀路和割面', '连续多割几刀观察'], correct: 1, feedback: '先找原因，再做小幅、可控的修正。检查顺序是：刀刃 → 刀路 → 割面 → 树体与环境。' },
+      { type: 'gallery' },
+      { type: 'quiz', image: '橡胶树快速厚削.jpg', title: '为了赶进度，可以一刀多削吗？', note: '选择能保护割面和树体周期的做法。', options: ['加快速度，一次多削', '保持薄削均匀，按标线推进', '只在割线末端加厚一刀'], correct: 1, feedback: '耗皮无法恢复，应保持薄削、均匀、连续的标准节奏。' },
+      { type: 'process' },
+      { type: 'matching' },
+      { type: 'quiz', image: '橡胶树割面局部出现明显深伤.jpg', title: '发现疑似深伤，还继续吗？', note: '把停止扩大损伤放在继续作业之前。', options: ['完成整条割线再检查', '立即停刀并请技术人员确认', '用更厚一刀把割面修平'], correct: 1, feedback: '疑似深伤应立即停刀，避免继续扩大伤口，并请技术人员确认。' },
+      { type: 'multi', image: '橡胶树割树角度略陡、中段深伤、前薄后厚、导胶正常.jpg' },
+      { type: 'summary', image: '橡胶树的标准完成割线图.jpg' },
+      { type: 'result', image: '清晨橡胶林封面.jpg' }
+    ];
+    const app = document.getElementById('app');
+    const state = { current: 0, score: 0, answered: {}, order: [], matches: {}, multi: new Set(), placed: false };
+    const img = (name, alt, cls) => '<img class="' + (cls || '') + '" src="' + asset(name) + '" alt="' + (alt || '') + '">';
+    const feedback = (id, text, kind) => { const el = document.getElementById(id); if (!el) return; el.textContent = text; el.className = 'feedback ' + (kind || ''); };
+    const choice = (text, index, action, checked) => '<button class="choice ' + (checked ? 'correct' : '') + '" data-action="' + action + '" data-option="' + index + '"><span class="letter">' + String.fromCharCode(65 + index) + '</span><span>' + text + '</span></button>';
+    function slideShell(i, content, mode) { return '<section class="slide ' + (mode || 'light') + '" data-slide="' + i + '">' + content + '</section>'; }
+    function renderSlide(s, i) {
+      if (s.type === 'cover') return slideShell(i, '<img class="cover-image" src="' + asset(s.image) + '" alt="清晨橡胶林与接胶杯">' + '<div class="cover-copy"><span class="cover-tag">现场任务 · 交互式技能训练</span><h1 class="title">今天，你来开第一条<br>标准割线</h1><p class="subtitle">橡胶树割胶线怎么开｜角度、深度与耗皮控制</p><div class="cover-meta"><div><span>训练页</span><strong>15</strong></div><div><span>核心控制</span><strong>3 项</strong></div><div><span>建议及格线</span><strong>80%</strong></div></div><button class="cover-start" data-action="go" data-to="1"><i>→</i> 开始开线</button></div>', 'dark cover');
+      if (s.type === 'principles') return slideShell(i, '<div class="head"><div><div class="kicker">P02 · 任务简报</div><h2 class="title">三项控制，决定一条割线的质量</h2><p class="subtitle">先看清目标，再进入现场判断。</p></div><div class="index">02</div></div><div class="rule"></div><div class="three"><article class="principle"><div class="num">CONTROL 01</div><h3>角度顺畅汇流</h3><p>方向要利于胶乳汇流，避免过平滞流或过陡增加割线长度。</p>' + img('标准开线橡胶树.jpg', '标准开线橡胶树') + '</article><article class="principle"><div class="num">CONTROL 02</div><h3>深度保护形成层</h3><p>开放乳管，但不能伤及形成层。深度判断比盲目加深更重要。</p>' + img('橡胶树割面局部出现明显深伤.jpg', '形成层风险') + '</article><article class="principle"><div class="num">CONTROL 03</div><h3>耗皮薄削均匀</h3><p>保持薄、连续、厚度均匀，才能延长树体可割年限。</p>' + img('薄、连续、厚度均匀.jpg', '薄削均匀') + '</article></div><div style="margin-top:24px"><button class="btn" data-action="go" data-to="2">进入现场 →</button></div>');
+      if (s.type === 'beforeafter') return slideShell(i, '<div class="head"><div><div class="kicker">P03 · 开割前检查</div><h2 class="title">下刀前，先把现场清干净</h2><p class="subtitle">树干有泥水和硬胶残留，下刀前你先做什么？</p></div><div class="index">03</div></div><div class="photo-grid"><figure class="photo">' + img(s.image1, '树干清理前') + '<figcaption>清理前 · 泥水与硬胶会干扰刀路</figcaption></figure><figure class="photo">' + img(s.image2, '树干清理后') + '<figcaption>清理后 · 再确认刀具状态</figcaption></figure></div><div class="choices">' + choice('直接沿旧割线快速下刀', 0, 'before') + choice('清理树干和割面，再检查刀具', 1, 'before') + choice('先加深一刀，观察是否出胶', 2, 'before') + '</div><div class="feedback" id="feedback-2">点击选项，查看现场判断。</div>');
+      if (s.type === 'angle') return slideShell(i, '<div class="head"><div><div class="kicker">P04 · 关卡一 · 角度</div><h2 class="title">哪条割线，更利于汇流？</h2><p class="subtitle">选择符合模板标线的割线。具体角度按当地割制规程复核。</p></div><div class="index">04</div></div><div class="gallery"><div class="gallery-card" data-action="angle" data-option="0">' + img('橡胶树割胶胶乳可能滞留或外溢图片.jpg', '明显过平') + '<strong>明显过平</strong></div><div class="gallery-card" data-action="angle" data-option="1">' + img('标准开线橡胶树.jpg', '贴合标准模板线') + '<strong>贴合标准模板线</strong></div><div class="gallery-card" data-action="angle" data-option="2">' + img('橡胶树快速厚削.jpg', '明显过陡') + '<strong>明显过陡</strong></div></div><div class="feedback" id="feedback-3">点击图片，判断角度与汇流的关系。</div>');
+      if (s.type === 'template') return slideShell(i, '<div class="head"><div><div class="kicker">P05 · 关卡一 · 定线</div><h2 class="title">倾斜树干，怎样把线定准？</h2><p class="subtitle">把半透明开线模板放到正确贴合区。支持拖动，也可直接点击模板。</p></div><div class="index">05</div></div><div class="template-stage"><div class="tree-zone" id="tree-zone">' + img(s.tree, '倾斜橡胶树干') + '<div class="target-zone" id="target-zone"><span>标准贴合区</span></div></div><div><div class="template-card" id="template-card" draggable="true">' + img(s.template, '半透明开线模板') + '<strong>半透明开线模板</strong><p class="micro">先定线，再下刀。不能只看地面水平，也不能凭经验随意加大坡度。</p></div><div class="feedback" id="feedback-4">把模板拖到左侧橡胶树的标准贴合区。</div></div></div>');
+      if (s.type === 'depth') return slideShell(i, '<div class="head"><div><div class="kicker">P06 · 关卡二 · 深度</div><h2 class="title">哪一种刀口状态，可以继续作业？</h2><p class="subtitle">开放乳管，也要保护形成层。点击剖面图作出判断。</p></div><div class="index">06</div></div><div class="diagram-grid"><div class="diagram" data-action="depth" data-option="0"><div class="slice shallow"><span class="bark"></span><span class="cambium"></span><span class="wood"><i class="knife"></i></span></div><strong>A · 刀口停在外层，明显过浅</strong></div><div class="diagram" data-action="depth" data-option="1"><div class="slice good"><span class="bark"></span><span class="cambium"></span><span class="wood"><i class="knife"></i></span></div><strong>B · 接近形成层但未伤及</strong></div><div class="diagram" data-action="depth" data-option="2"><div class="slice deep"><span class="bark"></span><span class="cambium"></span><span class="wood"><i class="knife"></i></span></div><strong>C · 切入形成层，明显过深</strong></div></div><div class="feedback" id="feedback-5">选择一个剖面状态。</div>');
+      if (s.type === 'quiz') return slideShell(i, '<div class="quiz"><div class="quiz-main"><div class="kicker">P0' + (i + 1) + ' · 现场判断</div><h2 class="question">' + s.title + '</h2><p class="question-note">' + s.note + '</p><div class="hero-image">' + img(s.image, s.title) + '</div></div><div class="choices"><div class="choices-label">选择你的处理方式</div>' + s.options.map((x, n) => choice(x, n, 'quiz-' + i)).join('') + '<div class="feedback" id="feedback-' + i + '">点击选项，查看反馈。</div></div></div>');
+      if (s.type === 'gallery') return slideShell(i, '<div class="head"><div><div class="kicker">P08 · 关卡三 · 耗皮</div><h2 class="title">哪一种木屑，符合薄削均匀？</h2><p class="subtitle">保持薄、连续、厚度均匀，才是合适的耗皮状态。</p></div><div class="index">08</div></div><div class="gallery"><div class="gallery-card" data-action="gallery" data-option="0">' + img('厚而卷曲.jpg', '厚而卷曲') + '<strong>A · 厚而卷曲</strong></div><div class="gallery-card" data-action="gallery" data-option="1">' + img('薄、连续、厚度均匀.jpg', '薄连续厚度均匀') + '<strong>B · 薄、连续、厚度均匀</strong></div><div class="gallery-card" data-action="gallery" data-option="2">' + img('断续破碎.jpg', '断续破碎') + '<strong>C · 断续破碎</strong></div></div><div class="feedback" id="feedback-7">点击图片，判断耗皮状态。</div>');
+      if (s.type === 'process') return slideShell(i, '<div class="head"><div><div class="kicker">P10 · 综合操作</div><h2 class="title">完成开线步骤，按正确顺序排列</h2><p class="subtitle">点击步骤卡片进行排序。完成五步后提交判断。</p></div><div class="index">10</div></div><div class="process">' + [['清洁树干并检查刀具','现场干净，刀具状态明确'],['贴合模板确定割线','方向和角度先确定'],['试刀并检查深度','小幅试割，确认深度'],['保持薄削均匀推进','按标线稳定推进'],['检查胶流、割面和木屑','完成后复核状态']].map((x, n) => '<article class="process-card" data-action="process" data-step="' + n + '"><div class="step-no">STEP ' + (n + 1) + '</div><h3>' + x[0] + '</h3><p>' + x[1] + '</p></article>').join('') + '</div><div class="selected-order" id="selected-order"></div><div style="margin-top:12px"><button class="btn" data-action="submit-order">提交顺序</button><button class="btn alt" data-action="clear-order" style="margin-left:8px">重排</button></div><div class="feedback" id="feedback-9">点击卡片，从第一步开始。</div>');
+      if (s.type === 'matching') return slideShell(i, '<div class="head"><div><div class="kicker">P11 · 异常诊断</div><h2 class="title">现场表现与优先处理措施，如何配对？</h2><p class="subtitle">每一行选择最优先的处理动作。</p></div><div class="index">11</div></div><div class="matching"><div class="match-row"><div class="match-problem">胶乳沿割线中途外溢</div><div class="match-actions"><button data-action="match" data-row="0" data-option="0">检查方向、角度和导胶位置</button><button data-action="match" data-row="0" data-option="1">立即停刀减压</button></div></div><div class="match-row"><div class="match-problem">割面局部出现明显深伤</div><div class="match-actions"><button data-action="match" data-row="1" data-option="0">检查刀具锋利度</button><button data-action="match" data-row="1" data-option="1">立即停刀，检查刀路</button></div></div><div class="match-row"><div class="match-problem">木屑忽厚忽薄、割面起伏</div><div class="match-actions"><button data-action="match" data-row="2" data-option="0">检查刀具锋利度与运刀稳定性</button><button data-action="match" data-row="2" data-option="1">加大压刀保持速度</button></div></div></div><div class="feedback" id="feedback-10">点击每行的处理措施，完成配对。</div>');
+      if (s.type === 'multi') return slideShell(i, '<div class="quiz"><div class="quiz-main"><div class="kicker">P13 · 通关挑战</div><h2 class="question">找出这条割线，需要纠正的问题</h2><p class="question-note">观察完整作业结果，选出所有需要纠正的问题。导胶位置正常，不要误选。</p><div class="hero-image">' + img(s.image, '综合错误割线') + '</div></div><div class="choices"><div class="choices-label">多选题 · 全部选对才得分</div>' + ['角度偏大','中段过深','耗皮不均','导胶位置错误'].map((x, n) => choice(x, n, 'multi')).join('') + '<div class="feedback" id="feedback-12">已选择 0 项。</div></div></div>');
+      if (s.type === 'summary') return slideShell(i, '<div class="head"><div><div class="kicker">P14 · 知识收束</div><h2 class="title">只记住三个动作，现场就不容易乱</h2><p class="subtitle">先定线，再控深，最后稳住耗皮。</p></div><div class="index">14</div></div><div class="summary-grid"><article class="summary-card"><div class="tag">01 · 先定线</div><h3>方向与角度</h3><p>服从当地割制标准，先确定汇流方向。</p></article><article class="summary-card"><div class="tag">02 · 再控深</div><h3>开放乳管</h3><p>控制刀口深度，保护形成层。</p></article><article class="summary-card"><div class="tag">03 · 稳耗皮</div><h3>薄削均匀</h3><p>保持薄、连续、厚度均匀。</p></article></div><div class="rule"></div><div style="display:flex; gap:16px; align-items:center"><div class="hero-image" style="width:245px; height:120px; margin:0">' + img(s.image, '标准完成割线') + '</div><p class="micro">现场操作仍须遵守当地规程，并接受技术指导。</p></div>');
+      if (s.type === 'result') return slideShell(i, '<div class="result"><div class="score-wrap"><div class="score-ring"><div class="score" id="score">80%</div></div></div><div class="result-copy"><div class="kicker">P15 · 训练结果</div><h2>你的现场判断已完成</h2><p id="result-text">建议及格线为 80%。未达 80% 时，复习角度、深度和耗皮关卡后重做；达到 80% 时，仍须在现场遵守当地规程并接受技术指导。</p><div class="result-actions"><button class="btn" data-action="restart">重做测验</button><button class="btn alt" data-action="toc">查看目录</button></div></div></div>', 'light');
+    }
+    function build() {
+      app.innerHTML = slides.map(renderSlide).join('') + '<div class="topline" id="topline"><div class="brand"><span class="brand-mark"></span>橡胶树割胶线 · WEB PPT</div><div class="counter" id="counter"></div></div><div class="progress" id="progress"></div><div class="nav"><button class="toc-button" data-action="toc">目录</button><div class="nav-group"><button data-action="prev" aria-label="上一页">←</button><button data-action="next" aria-label="下一页">→</button></div></div><div class="toc" id="toc"><button class="toc-close" data-action="close-toc" aria-label="关闭目录">×</button><h2>页面目录</h2><div class="toc-grid">' + slides.map((s, i) => '<button class="toc-item" data-action="go" data-to="' + i + '">' + String(i + 1).padStart(2, '0') + ' · ' + ['封面','任务简报','开割前检查','角度判断','倾斜树干定线','深度判断','偏弱胶流诊断','耗皮判断','薄削节奏','综合操作排序','异常配对','安全决策','通关挑战','知识收束','训练结果'][i] + '</button>').join('') + '</div></div>';
+      document.querySelectorAll('[data-action]').forEach(el => el.addEventListener('click', handleAction));
+      const card = document.getElementById('template-card');
+      const zone = document.getElementById('tree-zone');
+      if (card && zone) {
+        card.addEventListener('click', placeTemplate);
+        card.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', 'template'));
+        zone.addEventListener('dragover', e => e.preventDefault());
+        zone.addEventListener('drop', e => { e.preventDefault(); placeTemplate(); });
+      }
+      document.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(state.current + 1); } if (e.key === 'ArrowLeft') { e.preventDefault(); go(state.current - 1); } if (e.key === 'Escape') closeToc(); if (e.key === 'Home') go(0); if (e.key === 'End') go(slides.length - 1); });
+      render();
+    }
+    function handleAction(e) {
+      const el = e.currentTarget;
+      const action = el.dataset.action;
+      if (action === 'go') return go(Number(el.dataset.to));
+      if (action === 'next') return go(state.current + 1);
+      if (action === 'prev') return go(state.current - 1);
+      if (action === 'toc') return openToc();
+      if (action === 'close-toc') return closeToc();
+      if (action === 'before') return answerQuiz(2, Number(el.dataset.option), '先完成清理，再检查刀具。泥沙会干扰刀路，试探性深割会增加伤树风险。');
+      if (action === 'angle') return answerGallery(3, Number(el.dataset.option), '角度贴合模板线，利于汇流，也避免无谓增加割线长度。');
+      if (action === 'depth') return answerGallery(5, Number(el.dataset.option), '接近形成层但未伤及，说明乳管有效开放，同时保留安全余量。');
+      if (action === 'gallery') return answerGallery(7, Number(el.dataset.option), '薄、连续、厚度均匀，说明推进稳定，耗皮状态合适。');
+      if (action.indexOf('quiz-') === 0) { const slideIndex = Number(action.slice(5)); return answerQuiz(slideIndex, Number(el.dataset.option), slides[slideIndex].feedback); }
+      if (action === 'multi') return toggleMulti(Number(el.dataset.option));
+      if (action === 'process') return selectStep(Number(el.dataset.step));
+      if (action === 'submit-order') return submitOrder();
+      if (action === 'clear-order') { state.order = []; document.querySelectorAll('.process-card').forEach(x => x.classList.remove('selected','done')); return updateOrder(); }
+      if (action === 'match') return match(Number(el.dataset.row), Number(el.dataset.option));
+      if (action === 'restart') { state.score = 0; state.answered = {}; state.order = []; state.matches = {}; state.multi = new Set(); state.placed = false; go(0); return; }
+    }
+    function markScore(key, ok) { if (state.answered[key]) return; state.answered[key] = true; if (ok) state.score += 1; }
+    function answerQuiz(slideIndex, option, goodText) {
+      const ok = option === slides[slideIndex].correct;
+      document.querySelectorAll('[data-action="quiz-' + slideIndex + '"], [data-action="before"]').forEach(x => x.classList.remove('correct','wrong'));
+      const current = document.querySelector('[data-slide="' + slideIndex + '"] [data-option="' + option + '"]');
+      if (current) current.classList.add(ok ? 'correct' : 'wrong');
+      markScore(slideIndex, ok);
+      feedback('feedback-' + slideIndex, ok ? goodText : '先排除会扩大损伤或增加耗皮的做法，再重新判断。', ok ? 'ok' : 'bad');
+    }
+    function answerGallery(slideIndex, option, goodText) {
+      const ok = option === 1;
+      document.querySelectorAll('[data-slide="' + slideIndex + '"] [data-option]').forEach(x => x.classList.remove('correct','wrong'));
+      const current = document.querySelector('[data-slide="' + slideIndex + '"] [data-option="' + option + '"]');
+      if (current) current.classList.add(ok ? 'correct' : 'wrong');
+      markScore(slideIndex, ok);
+      feedback('feedback-' + slideIndex, ok ? goodText : '这个状态会带来滞流、伤及形成层或耗皮不均，请再看一遍题干。', ok ? 'ok' : 'bad');
+    }
+    function placeTemplate() {
+      state.placed = true;
+      const card = document.getElementById('template-card');
+      if (card) card.classList.add('placed');
+      markScore(4, true);
+      feedback('feedback-4', '模板已贴合到标准区。先定线，再下刀。', 'ok');
+    }
+    function selectStep(step) {
+      if (state.order.indexOf(step) >= 0) return;
+      state.order.push(step);
+      const cards = document.querySelectorAll('[data-action="process"]');
+      cards.forEach(x => { if (Number(x.dataset.step) === step) x.classList.add('selected'); });
+      updateOrder();
+    }
+    function updateOrder() {
+      const names = ['清洁检查','贴合定线','试刀控深','薄削推进','复核状态'];
+      const el = document.getElementById('selected-order');
+      if (el) el.innerHTML = state.order.map((x, n) => '<span class="order-chip">' + (n + 1) + ' · ' + names[x] + '</span>').join('');
+    }
+    function submitOrder() {
+      const ok = state.order.join(',') === '0,1,2,3,4';
+      markScore(9, ok);
+      document.querySelectorAll('[data-action="process"]').forEach(x => x.classList.toggle('done', ok));
+      feedback('feedback-9', ok ? '顺序正确：清洁检查 → 贴合定线 → 试刀控深 → 薄削推进 → 复核状态。' : '顺序还需要调整。先清洁检查，再定线、试刀、推进，最后复核。', ok ? 'ok' : 'bad');
+    }
+    function match(row, option) {
+      const answers = [0, 1, 0];
+      const ok = option === answers[row];
+      state.matches[row] = ok;
+      document.querySelectorAll('[data-row="' + row + '"]').forEach(x => x.classList.remove('selected'));
+      const current = document.querySelector('[data-row="' + row + '"][data-option="' + option + '"]');
+      if (current) current.classList.add('selected');
+      if (Object.keys(state.matches).length === 3 && Object.values(state.matches).every(Boolean)) markScore(10, true);
+      feedback('feedback-10', ok ? '配对正确。继续完成另外两行。' : '先判断风险等级：深伤要停刀，外溢看方向与导胶，木屑起伏看刀具与运刀稳定性。', ok ? 'ok' : 'bad');
+    }
+    function toggleMulti(option) {
+      state.multi.has(option) ? state.multi.delete(option) : state.multi.add(option);
+      const el = document.querySelector('[data-slide="12"] [data-option="' + option + '"]');
+      if (el) el.classList.toggle('correct', state.multi.has(option));
+      const expected = [0,1,2];
+      const ok = state.multi.size === 3 && expected.every(x => state.multi.has(x));
+      markScore(12, ok);
+      feedback('feedback-12', ok ? '全部找对：角度偏大、中段过深、耗皮不均。导胶位置正常。' : '已选择 ' + state.multi.size + ' 项。需要同时找出角度、深度和耗皮问题。', ok ? 'ok' : '');
+    }
+    function go(index) {
+      state.current = Math.max(0, Math.min(slides.length - 1, index));
+      document.querySelectorAll('.slide').forEach((el, i) => el.classList.toggle('active', i === state.current));
+      document.getElementById('counter').textContent = String(state.current + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+      document.getElementById('progress').style.width = ((state.current + 1) / slides.length * 100) + '%';
+      const top = document.getElementById('topline');
+      if (top) top.classList.toggle('light', state.current !== 0);
+      if (state.current === 14) updateResult();
+      closeToc();
+    }
+    function updateResult() {
+      const total = 11;
+      const percent = Math.min(100, Math.max(0, Math.round(state.score / total * 100)));
+      document.getElementById('score').textContent = percent + '%';
+      document.getElementById('result-text').textContent = percent >= 80 ? '已掌握基础判断逻辑。进入现场后，仍须遵守当地规程并接受技术指导。' : '未达 80%。建议复习角度、深度和耗皮关卡后重做，再把判断带回现场练习。';
+    }
+    function render() { go(0); }
+    function openToc() { document.getElementById('toc').classList.add('open'); }
+    function closeToc() { document.getElementById('toc').classList.remove('open'); }
+    build();
+  </script>
+</body>
+</html>
+
